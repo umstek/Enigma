@@ -1,10 +1,11 @@
-﻿Imports Enigma.Util
+﻿Imports UMSTeK.Enigma.Util
 
 ''' <summary>
 ''' Represents a setting or a certain key configuration of Enigma machine. 
 ''' </summary>
 ''' <typeparam name="E">Type of the machine. </typeparam>
 ''' <remarks></remarks>
+<Serializable>
 Public Class Configuration(Of E)
 
     Public Property Alphabet As List(Of E)
@@ -17,6 +18,10 @@ Public Class Configuration(Of E)
 
     Public Property Reflector As ReflectorCfg
 
+    ''' <summary>
+    ''' Represents the state of a Plugboard.
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class PlugboardCfg
         Public Property SwapsA As List(Of E)
         Public Property SwapsB As List(Of E)
@@ -38,6 +43,10 @@ Public Class Configuration(Of E)
 
     End Class ' PlugboardCfg
 
+    ''' <summary>
+    ''' Represents the state of a ThinRotor
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class ThinRotorCfg
         Public Property Index As Integer
         Public Property RingSetting As E
@@ -45,8 +54,8 @@ Public Class Configuration(Of E)
 
         Public Shared Operator =(l As ThinRotorCfg, r As ThinRotorCfg) As Boolean
             Return l.Index = r.Index AndAlso l.RingSetting.Equals(r.RingSetting)
-            ' We don't simply mind the display, 
-            ' because it's the password - but we store it...!
+            ' We don't simply mind the display 
+            ' because it's the password; but we store it...!
         End Operator ' =
 
         Public Shared Operator <>(l As ThinRotorCfg, r As ThinRotorCfg) As Boolean
@@ -62,6 +71,10 @@ Public Class Configuration(Of E)
 
     End Class ' ThinRotorCfg
 
+    ''' <summary>
+    ''' Represents the state of a Rotor
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class RotorCfg
         Inherits ThinRotorCfg
 
@@ -73,6 +86,10 @@ Public Class Configuration(Of E)
 
     End Class ' RotorCfg
 
+    ''' <summary>
+    ''' Represents the state of a Reflector. 
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class ReflectorCfg
         Inherits ThinRotorCfg
 

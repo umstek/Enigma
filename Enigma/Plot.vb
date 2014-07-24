@@ -1,10 +1,12 @@
-﻿Imports Enigma.Util
+﻿Imports UMSTeK.Enigma.Util
 
 ''' <summary>
-''' Represents a plan or a plot of an Enigma construction.
+''' Represents a plan or a plot of an Enigma construction. 
+''' We (I; oops) use this for the sake of persistence and GUI. 
 ''' </summary>
 ''' <typeparam name="E">Type of the machine. </typeparam>
 ''' <remarks></remarks>
+<Serializable>
 Public Class Plot(Of E)
 
     Public Property Alphabet As List(Of E)
@@ -22,6 +24,10 @@ Public Class Plot(Of E)
     Public Property RotatingReflector As Boolean
     Public Property Reflectors As List(Of ReflectorPlot)
 
+    ''' <summary>
+    ''' Represents a plot of an Enigma plugboard. 
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class PlugboardPlot
         Public Property CableCount As Integer
 
@@ -41,6 +47,10 @@ Public Class Plot(Of E)
 
     End Class
 
+    ''' <summary>
+    ''' Represents a plot of an Enigma EntryWheel
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class EntryWheelPlot
         Public Property Substitutes As List(Of E)
 
@@ -60,6 +70,10 @@ Public Class Plot(Of E)
 
     End Class
 
+    ''' <summary>
+    ''' Represents a plot of an Enigma ThinRotor
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class ThinRotorPlot
         Public Property Substitutes As List(Of E)
 
@@ -80,6 +94,10 @@ Public Class Plot(Of E)
 
     End Class
 
+    ''' <summary>
+    ''' Represents a plot of an Enigma Rotor
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class RotorPlot
         Inherits ThinRotorPlot
         Public Property Notches As List(Of E)
@@ -101,6 +119,10 @@ Public Class Plot(Of E)
 
     End Class
 
+    ''' <summary>
+    ''' Represents a plot of an Enigma Reflector. 
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class ReflectorPlot
         Public Property SwapsA As List(Of E)
         Public Property SwapsB As List(Of E)

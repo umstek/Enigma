@@ -5,7 +5,6 @@
 ''' </summary>
 ''' <typeparam name="E">Type of the Enigma machine. (Char, Byte etc)</typeparam>
 ''' <remarks></remarks>
-<Serializable>
 Public Class Enigma(Of E)
 
 #Region "Instance Variables"
@@ -18,15 +17,15 @@ Public Class Enigma(Of E)
 
     Private ReadOnly rotorCount As Integer
     Private ReadOnly availRotors As List(Of Rotor)
-    <NonSerialized> Private rotors As List(Of Rotor)
+    Private rotors As List(Of Rotor)
 
     Private ReadOnly thinRotorCount As Integer
     Private ReadOnly availThinRotors As List(Of ThinRotor)
-    <NonSerialized> Private thinRotors As List(Of ThinRotor)
+    Private thinRotors As List(Of ThinRotor)
 
     Private ReadOnly availReflectors As List(Of Reflector)
     Private ReadOnly rotatingReflector As Boolean
-    <NonSerialized> Private cReflector As Reflector
+    Private cReflector As Reflector
 
 #End Region
 
@@ -147,9 +146,9 @@ Public Class Enigma(Of E)
     End Sub ' New (plot)
 
     ''' <summary>
-    ''' 
+    ''' Returns the plot which is used to build this machine. 
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>A plot describing this machine.</returns>
     ''' <remarks></remarks>
     Public Function GetPlot() As Plot(Of E)
         Return New Plot(Of E) With
@@ -168,9 +167,9 @@ Public Class Enigma(Of E)
     End Function ' GetPlot
 
     ''' <summary>
-    ''' 
+    ''' Returns current configuration of the machine. 
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>A configuration describing the state of the machine.</returns>
     ''' <remarks></remarks>
     Public Function GetConfig() As Configuration(Of E)
         ' Rotors and ThinRotors lists need to be reversed, 
@@ -239,7 +238,7 @@ Public Class Enigma(Of E)
         Catch ex As IndexOutOfRangeException
             Throw New EnigmaException("Wrong rotor index(es)", "selectedRotors")
         Catch ex As Exception
-            Throw ex
+            Throw
         End Try
 
         If selectedThinRotors.Count <> thinRotorCount Then
@@ -256,7 +255,7 @@ Public Class Enigma(Of E)
         Catch ex As IndexOutOfRangeException
             Throw New EnigmaException("Wrong thin rotor index(es)", "selectedThinRotors")
         Catch ex As Exception
-            Throw ex
+            Throw
         End Try
 
         If selectedReflector.Item1 >= availReflectors.Count Then
@@ -270,6 +269,11 @@ Public Class Enigma(Of E)
 
     End Sub ' Prepare
 
+    ''' <summary>
+    ''' Changes the state of the machine according to the given configuration. 
+    ''' </summary>
+    ''' <param name="config">Cunfiguration which represents the state.</param>
+    ''' <remarks></remarks>
     Public Sub Prepare(config As Configuration(Of E))
         Me.Prepare((From sym In config.Plugboard.SwapsA
                     Select alphabet.IndexOf(sym)).
@@ -356,18 +360,6 @@ Public Class Enigma(Of E)
     End Function ' Parse (Symbol)
 
     ''' <summary>
-    ''' Process a collection one by one and obtain the output as necessary. 
-    ''' </summary>
-    ''' <param name="values">Symbols to be processed. </param>
-    ''' <returns>Processed symbols. </returns>
-    ''' <remarks></remarks>
-    Public Iterator Function Parse(values As IEnumerable(Of E)) As IEnumerable(Of E)
-        For Each value In values
-            Yield Parse(value)
-        Next
-    End Function ' Parse (Iterator)
-
-    ''' <summary>
     ''' Parse a chunk of symbols at once. 
     ''' </summary>
     ''' <param name="values">A list of symbols to be processed. </param>
@@ -391,11 +383,10 @@ Public Class Enigma(Of E)
     ''' Represents the plugboard in Enigma machine. 
     ''' </summary>
     ''' <remarks></remarks>
-    <Serializable>
     Private Class Plugboard
 
         Private ReadOnly cableCount As Integer
-        <NonSerialized> Private swaps As List(Of Integer)
+        Private swaps As List(Of Integer)
 
         ''' <summary>
         ''' Creates a new instance of plugboard with letting the specified number of symbol pairs to be swapped.
@@ -465,7 +456,6 @@ Public Class Enigma(Of E)
     ''' Represents the entry wheel (ETW) aka stator in Enigma machine. 
     ''' </summary>
     ''' <remarks></remarks>
-    <Serializable>
     Private Class EntryWheel
 
         Private ReadOnly substitutes As List(Of Integer)
@@ -504,10 +494,10 @@ Public Class Enigma(Of E)
         End Function ' Reparse
 
         ''' <summary>
-        ''' 
+        ''' Gets a lot which represents the entrywheel. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>Entrywheel plot. </returns>
         ''' <remarks></remarks>
         Public Function GetPlot(alphabet As List(Of E)) As Plot(Of E).EntryWheelPlot
             Return New Plot(Of E).EntryWheelPlot With
@@ -523,13 +513,12 @@ Public Class Enigma(Of E)
     ''' can be rotated manually (i.e.: according to the given key) and has a ring setting.
     ''' </summary>
     ''' <remarks>Acts as the base class for both rotor and reflector. </remarks>
-    <Serializable>
     Private Class ThinRotor
         Implements ICloneable
 
         Protected substitutes As List(Of Integer)
-        <NonSerialized> Protected ringSetting As Integer
-        <NonSerialized> Protected face As Integer
+        Protected ringSetting As Integer
+        Protected face As Integer
 
         Protected Sub New()
             ' Cloning support
@@ -628,10 +617,10 @@ Public Class Enigma(Of E)
         End Function ' Clone
 
         ''' <summary>
-        ''' 
+        ''' Gets a lot which represents the thinrotor. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>ThinRotor plot. </returns>
         ''' <remarks></remarks>
         Public Function GetPlot(alphabet As List(Of E)) As Plot(Of E).ThinRotorPlot
             Return New Plot(Of E).ThinRotorPlot With
@@ -640,10 +629,10 @@ Public Class Enigma(Of E)
         End Function ' GetPlot
 
         ''' <summary>
-        ''' 
+        ''' Gets the state of the thinrotor. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>ThinRotor configuration. </returns>
         ''' <remarks></remarks>
         Public Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).ThinRotorCfg
             Return New Configuration(Of E).ThinRotorCfg With
@@ -652,10 +641,10 @@ Public Class Enigma(Of E)
         End Function ' GetConfig
 
         ''' <summary>
-        ''' 
+        ''' Checks two ThinRotors for equality. 
         ''' </summary>
-        ''' <param name="obj"></param>
-        ''' <returns></returns>
+        ''' <param name="obj">The other thinrotor to compare this with. </param>
+        ''' <returns>Whether two thinrotors can be considered equal. </returns>
         ''' <remarks></remarks>
         Public Overrides Function Equals(obj As Object) As Boolean
             If Not TypeOf obj Is ThinRotor Then Return False
@@ -726,10 +715,10 @@ Public Class Enigma(Of E)
         End Function ' Clone
 
         ''' <summary>
-        ''' 
+        ''' Gets a lot which represents the rotor. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>Rotor plot. </returns>
         ''' <remarks></remarks>
         Public Overloads Function GetPlot(alphabet As List(Of E)) As Plot(Of E).RotorPlot
             Return New Plot(Of E).RotorPlot With
@@ -740,10 +729,10 @@ Public Class Enigma(Of E)
         End Function ' GetPlot
 
         ''' <summary>
-        ''' 
+        ''' Gets the state of the rotor. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>Rotor configuration. </returns>
         ''' <remarks></remarks>
         Public Overloads Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).RotorCfg
             Return New Configuration(Of E).RotorCfg With
@@ -752,10 +741,10 @@ Public Class Enigma(Of E)
         End Function ' GetConfig
 
         ''' <summary>
-        ''' 
+        ''' Checks two Rotors for equality. 
         ''' </summary>
-        ''' <param name="obj"></param>
-        ''' <returns></returns>
+        ''' <param name="obj">The other rotor to compare this with. </param>
+        ''' <returns>Whether two rotors can be considered equal. </returns>
         ''' <remarks></remarks>
         Public Overrides Function Equals(obj As Object) As Boolean
             If Not TypeOf obj Is Rotor Then Return False
@@ -835,10 +824,10 @@ Public Class Enigma(Of E)
         End Function ' Clone
 
         ''' <summary>
-        ''' 
+        ''' Gets a lot which represents the reflector. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>Reflector plot. </returns>
         ''' <remarks></remarks>
         Public Overloads Function GetPlot(alphabet As List(Of E)) As Plot(Of E).ReflectorPlot
             Return New Plot(Of E).ReflectorPlot With
@@ -852,10 +841,10 @@ Public Class Enigma(Of E)
         End Function ' GetPlot
 
         ''' <summary>
-        ''' 
+        ''' Gets the state of the Reflector. 
         ''' </summary>
-        ''' <param name="alphabet"></param>
-        ''' <returns></returns>
+        ''' <param name="alphabet">Symbols used in the machine. </param>
+        ''' <returns>Reflector configuration. </returns>
         ''' <remarks></remarks>
         Public Overloads Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).ReflectorCfg
             Return New Configuration(Of E).ReflectorCfg With
@@ -864,10 +853,10 @@ Public Class Enigma(Of E)
         End Function ' GetConfig
 
         ''' <summary>
-        ''' 
+        ''' Checks two reflectors for equility. 
         ''' </summary>
-        ''' <param name="obj"></param>
-        ''' <returns></returns>
+        ''' <param name="obj">The other reflector. </param>
+        ''' <returns>Whether this reflector can be considered equal to the other. </returns>
         ''' <remarks></remarks>
         Public Overrides Function Equals(obj As Object) As Boolean
             If Not TypeOf obj Is Reflector Then Return False
@@ -881,6 +870,7 @@ Public Class Enigma(Of E)
 
 #Region "Exceptions"
 
+    <Serializable>
     Public Class PlugboardException
         Inherits ArgumentException
         Public Sub New(message As String, paramName As String)
@@ -888,6 +878,7 @@ Public Class Enigma(Of E)
         End Sub
     End Class
 
+    <Serializable>
     Public Class EntryWheelException
         Inherits ArgumentException
         Public Sub New(message As String, paramName As String)
@@ -895,6 +886,7 @@ Public Class Enigma(Of E)
         End Sub
     End Class
 
+    <Serializable>
     Public Class RotorException
         Inherits ArgumentException
         Public Sub New(message As String, paramName As String)
@@ -902,6 +894,7 @@ Public Class Enigma(Of E)
         End Sub
     End Class
 
+    <Serializable>
     Public Class ThinRotorException
         Inherits ArgumentException
         Public Sub New(message As String, paramName As String)
@@ -909,6 +902,7 @@ Public Class Enigma(Of E)
         End Sub
     End Class
 
+    <Serializable>
     Public Class ReflectorException
         Inherits ArgumentException
         Public Sub New(message As String, paramName As String)
@@ -916,6 +910,7 @@ Public Class Enigma(Of E)
         End Sub
     End Class
 
+    <Serializable>
     Public Class EnigmaException
         Inherits ArgumentException
         Public Sub New(message As String, paramName As String)

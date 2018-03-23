@@ -3,13 +3,13 @@
 ''' of the popular German Enigma Machine with multiple improvements and extensions.
 ''' However, can support all the original Enigma machines.
 ''' </summary>
-''' <typeparam name="E">Type of the Enigma machine. (Char, Byte etc)</typeparam>
+''' <typeparam name="TE">Type of the Enigma machine. (Char, Byte etc)</typeparam>
 ''' <remarks></remarks>
-Public Class Enigma(Of E)
+Public Class Enigma(Of TE)
 
 #Region "Instance Variables"
 
-    Private ReadOnly alphabet As List(Of E)
+    Private ReadOnly alphabet As List(Of TE)
 
     Private ReadOnly plugs As Plugboard
 
@@ -49,7 +49,7 @@ Public Class Enigma(Of E)
     ''' <param name="rotatingReflector">Whether the reflector rotates as a rotor. 
     ''' (Only when there are no thin rotors.)</param>
     ''' <remarks></remarks>
-    Public Sub New(alphabet As List(Of E),
+    Public Sub New(alphabet As List(Of TE),
                    plugsCount As Integer,
                    entryWheelSubstitutes As List(Of Integer),
                    availableRotors As List(Of Tuple(Of List(Of Integer), List(Of Integer))),
@@ -112,7 +112,7 @@ Public Class Enigma(Of E)
     ''' </summary>
     ''' <param name="plot">A plot describing the machine. </param>
     ''' <remarks></remarks>
-    Public Sub New(plot As Plot(Of E))
+    Public Sub New(plot As Plot(Of TE))
         Me.New(plot.Alphabet,
                plot.Plugboard.CableCount,
                (Aggregate sym In plot.EntryWheel.Substitutes
@@ -150,8 +150,8 @@ Public Class Enigma(Of E)
     ''' </summary>
     ''' <returns>A plot describing this machine.</returns>
     ''' <remarks></remarks>
-    Public Function GetPlot() As Plot(Of E)
-        Return New Plot(Of E) With
+    Public Function GetPlot() As Plot(Of TE)
+        Return New Plot(Of TE) With
                {.Alphabet = Me.alphabet,
                 .Plugboard = Me.plugs.GetPlot,
                 .EntryWheel = Me.entry.GetPlot(alphabet),
@@ -171,29 +171,29 @@ Public Class Enigma(Of E)
     ''' </summary>
     ''' <returns>A configuration describing the state of the machine.</returns>
     ''' <remarks></remarks>
-    Public Function GetConfig() As Configuration(Of E)
+    Public Function GetConfig() As Configuration(Of TE)
         ' Rotors and ThinRotors lists need to be reversed, 
         ' Because the order is RTL in the machine but, LTR for outsiders. 
         Dim tmpRotors As New List(Of Rotor)(Me.rotors)
         tmpRotors.Reverse()
         Dim tmpThinRotors As New List(Of ThinRotor)(Me.thinRotors)
         tmpThinRotors.Reverse()
-        Return New Configuration(Of E) With
+        Return New Configuration(Of TE) With
                {.Alphabet = Me.alphabet,
                 .Plugboard = Me.plugs.GetConfig(alphabet),
                 .Rotors = (Aggregate rotor In tmpRotors
-                           Select (Function() As Configuration(Of E).RotorCfg
+                           Select (Function() As Configuration(Of TE).RotorCfg
                                        Dim cfg = rotor.GetConfig(alphabet)
                                        cfg.Index = Me.availRotors.IndexOf(rotor) + 1
                                        Return cfg
                                    End Function).Invoke Into ToList()),
                 .ThinRotors = (Aggregate trotor In tmpThinRotors
-                               Select (Function() As Configuration(Of E).ThinRotorCfg
+                               Select (Function() As Configuration(Of TE).ThinRotorCfg
                                            Dim cfg = trotor.GetConfig(alphabet)
                                            cfg.Index = Me.availThinRotors.IndexOf(trotor) + 1
                                            Return cfg
                                        End Function).Invoke Into ToList()),
-                .Reflector = (Function() As Configuration(Of E).ReflectorCfg
+                .Reflector = (Function() As Configuration(Of TE).ReflectorCfg
                                   Dim cfg = cReflector.GetConfig(alphabet)
                                   cfg.Index = Me.availReflectors.IndexOf(cReflector) + 1
                                   Return cfg
@@ -274,7 +274,7 @@ Public Class Enigma(Of E)
     ''' </summary>
     ''' <param name="config">Cunfiguration which represents the state.</param>
     ''' <remarks></remarks>
-    Public Sub Prepare(config As Configuration(Of E))
+    Public Sub Prepare(config As Configuration(Of TE))
         Me.Prepare((From sym In config.Plugboard.SwapsA
                     Select alphabet.IndexOf(sym)).
                    Concat(
@@ -305,7 +305,7 @@ Public Class Enigma(Of E)
     ''' <param name="value">The symbol to be encrypted/decrypted. </param>
     ''' <returns>Processed symbol. </returns>
     ''' <remarks></remarks>
-    Public Function Parse(value As E) As E
+    Public Function Parse(value As TE) As TE
         ' Unknown value, return itself unchanged.
         If Not alphabet.Contains(value) Then Return value
 
@@ -365,8 +365,8 @@ Public Class Enigma(Of E)
     ''' <param name="values">A list of symbols to be processed. </param>
     ''' <returns>Processed list of symbols. </returns>
     ''' <remarks></remarks>
-    Public Function Parse(values As List(Of E)) As List(Of E)
-        Dim result = New List(Of E)
+    Public Function Parse(values As List(Of TE)) As List(Of TE)
+        Dim result = New List(Of TE)
 
         For Each value In values
             result.Add(Parse(value))
@@ -432,8 +432,8 @@ Public Class Enigma(Of E)
         ''' </summary>
         ''' <returns>Plugboard plot. </returns>
         ''' <remarks></remarks>
-        Public Function GetPlot() As Plot(Of E).PlugboardPlot
-            Return New Plot(Of E).PlugboardPlot With {.CableCount = Me.cableCount}
+        Public Function GetPlot() As Plot(Of TE).PlugboardPlot
+            Return New Plot(Of TE).PlugboardPlot With {.CableCount = Me.cableCount}
         End Function ' GetPlot
 
         ''' <summary>
@@ -442,8 +442,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>Plugboard configuration. </returns>
         ''' <remarks></remarks>
-        Public Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).PlugboardCfg
-            Return New Configuration(Of E).PlugboardCfg With
+        Public Function GetConfig(alphabet As List(Of TE)) As Configuration(Of TE).PlugboardCfg
+            Return New Configuration(Of TE).PlugboardCfg With
                    {.SwapsA = (Aggregate index In Me.swaps
                                Take (Me.swaps.Count \ 2) Select alphabet(index) Into ToList()),
                     .SwapsB = (Aggregate index In Me.swaps
@@ -499,8 +499,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>Entrywheel plot. </returns>
         ''' <remarks></remarks>
-        Public Function GetPlot(alphabet As List(Of E)) As Plot(Of E).EntryWheelPlot
-            Return New Plot(Of E).EntryWheelPlot With
+        Public Function GetPlot(alphabet As List(Of TE)) As Plot(Of TE).EntryWheelPlot
+            Return New Plot(Of TE).EntryWheelPlot With
                    {.Substitutes = Aggregate index In Me.substitutes
                                    Select alphabet(index) Into ToList()}
         End Function ' GetPlot
@@ -610,8 +610,9 @@ Public Class Enigma(Of E)
         End Function ' Reparse
 
         Public Function Clone() As Object Implements ICloneable.Clone
-            Dim doli = New ThinRotor
-            doli.substitutes = New List(Of Integer)(Me.substitutes)
+            Dim doli = New ThinRotor With {
+                .substitutes = New List(Of Integer)(Me.substitutes)
+            }
 
             Return doli
         End Function ' Clone
@@ -622,8 +623,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>ThinRotor plot. </returns>
         ''' <remarks></remarks>
-        Public Function GetPlot(alphabet As List(Of E)) As Plot(Of E).ThinRotorPlot
-            Return New Plot(Of E).ThinRotorPlot With
+        Public Function GetPlot(alphabet As List(Of TE)) As Plot(Of TE).ThinRotorPlot
+            Return New Plot(Of TE).ThinRotorPlot With
                    {.Substitutes = Aggregate index In Me.substitutes
                                    Select alphabet(index) Into ToList()}
         End Function ' GetPlot
@@ -634,8 +635,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>ThinRotor configuration. </returns>
         ''' <remarks></remarks>
-        Public Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).ThinRotorCfg
-            Return New Configuration(Of E).ThinRotorCfg With
+        Public Function GetConfig(alphabet As List(Of TE)) As Configuration(Of TE).ThinRotorCfg
+            Return New Configuration(Of TE).ThinRotorCfg With
                    {.Display = alphabet(Me.Display),
                     .RingSetting = alphabet(Me.ringSetting)}
         End Function ' GetConfig
@@ -707,9 +708,10 @@ Public Class Enigma(Of E)
         End Property ' Kicks
 
         Public Overloads Function Clone() As Object
-            Dim doli = New Rotor
-            doli.substitutes = New List(Of Integer)(Me.substitutes)
-            doli.notches = New List(Of Integer)(Me.notches)
+            Dim doli = New Rotor With {
+                .substitutes = New List(Of Integer)(Me.substitutes),
+                .notches = New List(Of Integer)(Me.notches)
+            }
 
             Return doli
         End Function ' Clone
@@ -720,8 +722,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>Rotor plot. </returns>
         ''' <remarks></remarks>
-        Public Overloads Function GetPlot(alphabet As List(Of E)) As Plot(Of E).RotorPlot
-            Return New Plot(Of E).RotorPlot With
+        Public Overloads Function GetPlot(alphabet As List(Of TE)) As Plot(Of TE).RotorPlot
+            Return New Plot(Of TE).RotorPlot With
                    {.Substitutes = (Aggregate index In Me.substitutes
                                    Select alphabet(index) Into ToList()),
                     .Notches = (Aggregate index In Me.notches
@@ -734,8 +736,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>Rotor configuration. </returns>
         ''' <remarks></remarks>
-        Public Overloads Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).RotorCfg
-            Return New Configuration(Of E).RotorCfg With
+        Public Overloads Function GetConfig(alphabet As List(Of TE)) As Configuration(Of TE).RotorCfg
+            Return New Configuration(Of TE).RotorCfg With
                    {.Display = alphabet(Me.Display),
                     .RingSetting = alphabet(Me.ringSetting)}
         End Function ' GetConfig
@@ -817,8 +819,9 @@ Public Class Enigma(Of E)
         End Sub ' Turn
 
         Public Overloads Function Clone() As Object
-            Dim doli = New Reflector
-            doli.substitutes = New List(Of Integer)(Me.substitutes)
+            Dim doli = New Reflector With {
+                .substitutes = New List(Of Integer)(substitutes)
+            }
 
             Return doli
         End Function ' Clone
@@ -829,8 +832,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>Reflector plot. </returns>
         ''' <remarks></remarks>
-        Public Overloads Function GetPlot(alphabet As List(Of E)) As Plot(Of E).ReflectorPlot
-            Return New Plot(Of E).ReflectorPlot With
+        Public Overloads Function GetPlot(alphabet As List(Of TE)) As Plot(Of TE).ReflectorPlot
+            Return New Plot(Of TE).ReflectorPlot With
                    {.SwapsA = (Aggregate index In Me.substitutes
                                Take Me.substitutes.Count \ 2 Select alphabet(index) Into ToList()),
                     .SwapsB = (Aggregate index In Me.substitutes
@@ -846,8 +849,8 @@ Public Class Enigma(Of E)
         ''' <param name="alphabet">Symbols used in the machine. </param>
         ''' <returns>Reflector configuration. </returns>
         ''' <remarks></remarks>
-        Public Overloads Function GetConfig(alphabet As List(Of E)) As Configuration(Of E).ReflectorCfg
-            Return New Configuration(Of E).ReflectorCfg With
+        Public Overloads Function GetConfig(alphabet As List(Of TE)) As Configuration(Of TE).ReflectorCfg
+            Return New Configuration(Of TE).ReflectorCfg With
                    {.Display = alphabet(Me.Display),
                     .RingSetting = alphabet(Me.ringSetting)}
         End Function ' GetConfig

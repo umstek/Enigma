@@ -3,12 +3,12 @@
 ''' <summary>
 ''' Represents a setting or a certain key configuration of Enigma machine. 
 ''' </summary>
-''' <typeparam name="E">Type of the machine. </typeparam>
+''' <typeparam name="TE">Type of the machine. </typeparam>
 ''' <remarks></remarks>
 <Serializable>
-Public Class Configuration(Of E)
+Public Class Configuration(Of TE)
 
-    Public Property Alphabet As List(Of E)
+    Public Property Alphabet As List(Of TE)
 
     Public Property Plugboard As PlugboardCfg
 
@@ -23,8 +23,8 @@ Public Class Configuration(Of E)
     ''' </summary>
     ''' <remarks></remarks>
     Public Class PlugboardCfg
-        Public Property SwapsA As List(Of E)
-        Public Property SwapsB As List(Of E)
+        Public Property SwapsA As List(Of TE)
+        Public Property SwapsB As List(Of TE)
 
         Public Shared Operator =(l As PlugboardCfg, r As PlugboardCfg) As Boolean
             Return ListsAreEqual(l.SwapsA, r.SwapsA) AndAlso
@@ -49,8 +49,8 @@ Public Class Configuration(Of E)
     ''' <remarks></remarks>
     Public Class ThinRotorCfg
         Public Property Index As Integer
-        Public Property RingSetting As E
-        Public Property Display As E
+        Public Property RingSetting As TE
+        Public Property Display As TE
 
         Public Shared Operator =(l As ThinRotorCfg, r As ThinRotorCfg) As Boolean
             Return l.Index = r.Index AndAlso l.RingSetting.Equals(r.RingSetting)
@@ -101,7 +101,7 @@ Public Class Configuration(Of E)
 
     End Class ' ReflectorCfg
 
-    Public Shared Operator =(l As Configuration(Of E), r As Configuration(Of E)) As Boolean
+    Public Shared Operator =(l As Configuration(Of TE), r As Configuration(Of TE)) As Boolean
         If Not (ListsAreEqual(l.Alphabet, r.Alphabet) AndAlso
                l.Plugboard = r.Plugboard AndAlso
                ListsAreEqual(l.Rotors, r.Rotors) AndAlso
@@ -111,14 +111,14 @@ Public Class Configuration(Of E)
         Return True
     End Operator ' =
 
-    Public Shared Operator <>(l As Configuration(Of E), r As Configuration(Of E)) As Boolean
+    Public Shared Operator <>(l As Configuration(Of TE), r As Configuration(Of TE)) As Boolean
         Return Not l = r
     End Operator ' <>
 
     Public Overrides Function Equals(obj As Object) As Boolean
-        If Not TypeOf obj Is Configuration(Of E) Then Return False
+        If Not TypeOf obj Is Configuration(Of TE) Then Return False
 
-        Return Me = CType(obj, Configuration(Of E))
+        Return Me = CType(obj, Configuration(Of TE))
     End Function ' Equals
 
 End Class

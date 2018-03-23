@@ -4,12 +4,12 @@
 ''' Represents a plan or a plot of an Enigma construction. 
 ''' We (I; oops) use this for the sake of persistence and GUI. 
 ''' </summary>
-''' <typeparam name="E">Type of the machine. </typeparam>
+''' <typeparam name="TE">Type of the machine. </typeparam>
 ''' <remarks></remarks>
 <Serializable>
-Public Class Plot(Of E)
+Public Class Plot(Of TE)
 
-    Public Property Alphabet As List(Of E)
+    Public Property Alphabet As List(Of TE)
 
     Public Property Plugboard As PlugboardPlot
 
@@ -52,7 +52,7 @@ Public Class Plot(Of E)
     ''' </summary>
     ''' <remarks></remarks>
     Public Class EntryWheelPlot
-        Public Property Substitutes As List(Of E)
+        Public Property Substitutes As List(Of TE)
 
         Public Shared Operator =(l As EntryWheelPlot, r As EntryWheelPlot) As Boolean
             Return ListsAreEqual(l.Substitutes, r.Substitutes)
@@ -75,7 +75,7 @@ Public Class Plot(Of E)
     ''' </summary>
     ''' <remarks></remarks>
     Public Class ThinRotorPlot
-        Public Property Substitutes As List(Of E)
+        Public Property Substitutes As List(Of TE)
 
         Public Shared Operator =(l As ThinRotorPlot, r As ThinRotorPlot) As Boolean
             Return ListsAreEqual(l.Substitutes, r.Substitutes)
@@ -100,7 +100,7 @@ Public Class Plot(Of E)
     ''' <remarks></remarks>
     Public Class RotorPlot
         Inherits ThinRotorPlot
-        Public Property Notches As List(Of E)
+        Public Property Notches As List(Of TE)
 
         Public Overloads Shared Operator =(l As RotorPlot, r As RotorPlot) As Boolean
             Return ListsAreEqual(l.Notches, r.Notches) AndAlso
@@ -124,9 +124,9 @@ Public Class Plot(Of E)
     ''' </summary>
     ''' <remarks></remarks>
     Public Class ReflectorPlot
-        Public Property SwapsA As List(Of E)
-        Public Property SwapsB As List(Of E)
-        Public Property ExtraLetter As E
+        Public Property SwapsA As List(Of TE)
+        Public Property SwapsB As List(Of TE)
+        Public Property ExtraLetter As TE
 
         Public Overloads Shared Operator =(l As ReflectorPlot, r As ReflectorPlot) As Boolean
             If Not (ListsAreEqual(l.SwapsA, r.SwapsA) AndAlso
@@ -149,7 +149,7 @@ Public Class Plot(Of E)
 
     End Class
 
-    Public Shared Operator =(l As Plot(Of E), r As Plot(Of E)) As Boolean
+    Public Shared Operator =(l As Plot(Of TE), r As Plot(Of TE)) As Boolean
 
         If Not (ListsAreEqual(l.Alphabet, r.Alphabet) AndAlso
                 ListsAreEqual(l.Rotors, r.Rotors) AndAlso
@@ -165,14 +165,14 @@ Public Class Plot(Of E)
         Return True
     End Operator
 
-    Public Shared Operator <>(l As Plot(Of E), r As Plot(Of E)) As Boolean
+    Public Shared Operator <>(l As Plot(Of TE), r As Plot(Of TE)) As Boolean
         Return Not l = r
     End Operator
 
     Public Overrides Function Equals(obj As Object) As Boolean
-        If Not TypeOf obj Is Plot(Of E) Then Return False
+        If Not TypeOf obj Is Plot(Of TE) Then Return False
 
-        Return Me = CType(obj, Plot(Of E))
+        Return Me = CType(obj, Plot(Of TE))
     End Function
 
 End Class
